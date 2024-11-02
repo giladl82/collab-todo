@@ -1,13 +1,27 @@
 <script setup lang="ts">
 import TasksList from '@/components/TasksList.vue';
 import { useRouter } from 'vue-router';
-import { createNewSharedTask } from '@/composables/useTasks';
+import { initYjsConnection, sharedStore } from '@/stores/collaboration';
+import { useAuthenticationStore } from '@/stores/authentication';
 
+const authenticationStore = useAuthenticationStore();
 const router = useRouter();
 
+const user = await authenticationStore.getAuthenticatedUserAsync();
+if (user?.id) {
+  initYjsConnection(user?.id.toString());
+}
+
 const handleCreateTask = () => {
-  const task = createNewSharedTask();
-  if(!task) return;
+  const task = {
+    id: new Date().getTime(),
+    title: '',
+    description: '',
+    dueDate: new Date().getTime(),
+    isDraft: true,
+  };
+
+  sharedStore.tasks.todo!.push({ ...task });
 
   router.push({ name: 'modal', query: { id: task.id } });
 };

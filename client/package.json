@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@hocuspocus/provider": "^2.13.7",
+    "@syncedstore/core": "^0.6.0",
     "@vueuse/integrations": "^11.1.0",
     "focus-trap": "^7",
     "js-cookie": "^3.0.5",

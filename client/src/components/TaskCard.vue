@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import type { Status } from '@/composables/useTasks';
-import type { Task } from '@/types/task';
+import type { Status, Task } from '@/types/task';
 import { RouterLink } from 'vue-router';
 const { task, status } = defineProps<{ task: Task; status: Status }>();
-
 const today = new Date(new Date().toLocaleDateString());
 </script>
 
 <template>
   <RouterLink
+    v-if="task"
     :to="{ name: 'modal', query: { id: task.id } }"
     :class="{
       'block bg-white p-3 mb-3 border rounded-md shadow-sm hover:shadow-md': true,
