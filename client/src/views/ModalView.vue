@@ -1,16 +1,10 @@
 <script setup lang="ts">
-//TODO: Create a function to find the task by id and get the task
-//TODO: Bind the form to the task
-//TODO: Set a cancel object
-
-//Maybe what needs to do is to create another array of temporary tasks
-
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import {} from '@/stores/collaboration';
 import { useRouter } from 'vue-router';
 import type { Task } from '@/types/task';
 import { useFocusTrap } from '@vueuse/integrations/useFocusTrap';
-import { getTaskById } from '@/stores/collaboration';
+import { getTaskById, removeSharedTask } from '@/stores/collaboration';
 
 const router = useRouter();
 const sharedTask = getTaskById(Number(router.currentRoute.value.query.id));
@@ -52,6 +46,10 @@ const handleCancel = () => {
   sharedTask.dueDate = originalTask.value.dueDate;
   sharedTask.isDraft = originalTask.value.isDraft;
   sharedTask.title = originalTask.value.title;
+
+  if(sharedTask.isDraft) {
+    removeSharedTask(sharedTask.id);
+  }
 
   router.replace({ name: 'home' });
 };

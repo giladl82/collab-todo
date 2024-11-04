@@ -45,3 +45,13 @@ export const getTaskById = (id: number) => {
 
   return null;
 };
+
+export const removeSharedTask = (id: number, status: Status = 'todo') => {
+  const index =
+    sharedStore.tasks[status as Status]?.findIndex(task => task.id === id) ??
+    -1;
+
+  if (index > -1) {
+    sharedStore.tasks[status as Status]?.splice(index, 1);
+  }
+};
