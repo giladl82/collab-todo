@@ -19,7 +19,10 @@ In addition I implemented a very (very very) basic authentication system. Just s
 - Run the client
 
 ## Things to be done
-I would like to replace the yjs implementation with [syncedstore](https://syncedstore.org/docs/). A library build on top of yjs to make it easier to use.
+~~I would like to replace the yjs implementation with [syncedstore](https://syncedstore.org/docs/). A library build on top of yjs to make it easier to use~~.
+
+I already implemented the project using the [syncedstore](https://syncedstore.org/docs/) library. 
+So I created a new branch named [Yjs](https://docs.yjs.dev/) and in it you can find the old implementation.
 
 
 ## License  
