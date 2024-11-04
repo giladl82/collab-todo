@@ -5,7 +5,7 @@
 
 //Maybe what needs to do is to create another array of temporary tasks
 
-import { onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import {} from '@/stores/collaboration';
 import { useRouter } from 'vue-router';
 import type { Task } from '@/types/task';
@@ -13,33 +13,54 @@ import { useFocusTrap } from '@vueuse/integrations/useFocusTrap';
 import { getTaskById } from '@/stores/collaboration';
 
 const router = useRouter();
-const task = ref<Task | null>({
-  ...(getTaskById(Number(router.currentRoute.value.query.id)) ?? ({} as Task)),
-});
-
-console.log(getTaskById(Number(router.currentRoute.value.query.id)));
-console.log(task.value?.title);
-
-const originalTask = ref<Task | null>(
-  //  task.value?.value ? { ...task.value?.value } : null
-  null
-);
+const sharedTask = getTaskById(Number(router.currentRoute.value.query.id));
+const task = ref<Task | null>(sharedTask);
+const originalTask = ref<Task | null>(task.value ? { ...task.value } : null);
 const modalElement = ref<HTMLElement>();
+
 const { activate, deactivate } = useFocusTrap(modalElement, {
   immediate: true,
 });
 
-const handleCancel = () => {
-  if (!task.value || !originalTask.value) return;
+const formattedDate = computed(() => {
+  if (task.value?.dueDate) {
+    const date = new Date(task.value.dueDate);
+    const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
 
-  // task.value.value = originalTask.value;
+    return `${year}-${month}-${day}`;
+  } else {
+    return new Date().toDateString();
+  }
+});
+
+const handleDueDateChange = (event: Event) => {
+  if (!sharedTask || !task.value) return;
+
+  const target = event.target as HTMLInputElement;
+  task.value.dueDate = new Date(target.value).getTime();
+  sharedTask.dueDate = task.value!.dueDate;
+};
+
+const handleCancel = () => {
+  if (!task.value || !originalTask.value || !sharedTask) return;
+
+  task.value = originalTask.value;
+  sharedTask.description = originalTask.value.description;
+  sharedTask.id = originalTask.value.id;
+  sharedTask.dueDate = originalTask.value.dueDate;
+  sharedTask.isDraft = originalTask.value.isDraft;
+  sharedTask.title = originalTask.value.title;
 
   router.replace({ name: 'home' });
 };
 
 const handleSave = () => {
-  // if (!task.value?.value) return;
-  // task.value.value.isDraft = false;
+  if (!sharedTask) return;
+
+  sharedTask.isDraft = false;
+
   router.push({ name: 'home' });
 };
 
@@ -51,6 +72,7 @@ onUnmounted(() => {
   deactivate();
 });
 </script>
+
 <template>
   <div
     ref="modalElement"
@@ -104,6 +126,8 @@ onUnmounted(() => {
             id="dueDate"
             placeholder="Due Date"
             class="w-full border border-gray-500 rounded-md p-1"
+            :value="formattedDate"
+            @change="handleDueDateChange"
           />
         </div>
       </form>
@@ -124,38 +148,3 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
-
-<!-- const { tasks } = await useTasks();
-const task = ref<Task | null>(null);
-const originalTask = ref<Task | null>(null);
-const modalElement = ref<HTMLElement | null>(null);
-
-
-
-const formattedDate = computed(() => {
-  if (task.value?.dueDate) {
-    const date = new Date(task.value.dueDate);
-    const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-
-    return `${year}-${month}-${day}`;
-  } else {
-    return new Date().toDateString();
-  }
-});
-
-const handleDueDateChange = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  task.value!.dueDate = new Date(target.value);
-  updateSharedTask(task.value as Task);
-}; -->
-
-<!--
-
-if (!task.value) {
-  router.replace({ name: 'home' });
-}
-
-originalTask.value = { ...task.value };
-console.log(task.value.isDraft); -->

@@ -35,13 +35,9 @@ export const initYjsConnection = (documentName?: string) => {
 };
 
 export const getTaskById = (id: number) => {
-  console.log('todo', sharedStore.tasks.todo);
-  sharedStore.tasks.todo?.find(task => {
-    console.log('task--->', task)
-    return task.id === id});
   for (const status in sharedStore.tasks) {
     const task = sharedStore.tasks[status as Status]?.find(task => {
-      console.log('here', task, task.id, id);
+      return task.id === id;
     });
 
     if (task) return task;

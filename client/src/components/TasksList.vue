@@ -19,7 +19,7 @@ const { status } = defineProps<{ status: Status }>();
   >
     <template #item="{ element: task }">
       <TaskCard
-        :task="task.value"
+        :task="task"
         :status="status"
         v-if="!task.isDraft"
       />
